@@ -1,0 +1,45 @@
+# .github/workflows/terraform-aws-deploy.yml
+name: Terraform Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main  # Executa a ação quando um commit é feito na branch 'main'
+  pull_request:
+    branches:
+      - main
+
+env:
+  TF_VERSION: '1.5.0'  # Especifique a versão do Terraform que você está usando
+  AWS_REGION: 'us-east-1'  # Defina a região AWS que você deseja usar
+
+jobs:
+  terraform:
+    name: Terraform Deployment
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Faz checkout do código
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Armazene essas credenciais nos secrets do repositório
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'  # Somente faz apply se estiver na branch 'main'
+      run: terraform apply -auto-approve
