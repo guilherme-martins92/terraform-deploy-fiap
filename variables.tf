@@ -21,12 +21,12 @@ variable "cluster_name" {
 
 variable "desired_capacity" {
   description = "Capacidade desejada de nós"
-  default     = 2
+  default     = 1
 }
 
 variable "max_size" {
   description = "Tamanho máximo do grupo de nós"
-  default     = 3
+  default     = 1
 }
 
 variable "min_size" {
